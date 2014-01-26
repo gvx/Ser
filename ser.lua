@@ -8,7 +8,7 @@ local function make_safe(text)
 	return ("%q"):format(text):gsub('\n', 'n'):gsub("[\128-\255]", getchr)
 end
 
-local oddvals = {inf = '1/0', ['-inf'] = '-1/0', [tostring(0/0)] = '0/0'}
+local oddvals = {[tostring(1/0)] = '1/0', [tostring(-1/0)] = '-1/0', [tostring(0/0)] = '0/0'}
 local function write(t, memo, rev_memo)
 	local ty = type(t)
 	if ty == 'number' or ty == 'boolean' or ty == 'nil' then
