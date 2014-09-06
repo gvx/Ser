@@ -68,3 +68,9 @@ Other solutions
 
 Check out the [Lua-users wiki](http://lua-users.org/wiki/TableSerialization)
 for other libraries that do roughly the same thing.
+
+See also
+--------
+
+* [Lady](https://github.com/gvx/Lady): for trusted-source savegames
+* [Smallfolk](https://github.com/gvx/Smallfolk): for untrusted-source serialization
