@@ -22,7 +22,7 @@ local function write(t, memo, rev_memo)
 			memo[t] = index
 			rev_memo[index] = t
 		end
-		return '_' .. memo[t]
+		return '_[' .. memo[t] .. ']'
 	else
 		error("Trying to serialize unsupported type " .. ty)
 	end
@@ -53,9 +53,9 @@ end
 
 local function write_table_ex(t, memo, rev_memo, srefs, name)
 	if type(t) == 'function' then
-		return 'local _' .. name .. ' = loadstring ' .. make_safe(dump(t))
+		return '_[' .. name .. '] = loadstring ' .. make_safe(dump(t))
 	end
-	local m = {'local _', name, ' = {'}
+	local m = {'_[', name, '] = {'}
 	local mi = 3
 	for i = 1, #t do -- don't use ipairs here, we need the gaps
 		local v = t[i]
@@ -106,16 +106,17 @@ return function(t)
 	-- phase 3: add all the tricky cyclic stuff
 	for i, v in ipairs(srefs) do
 		n = n + 1
-		result[n] = write_key_value_pair(v[2], v[3], memo, rev_memo, '_' .. v[1])
+		result[n] = write_key_value_pair(v[2], v[3], memo, rev_memo, '_[' .. v[1] .. ']')
 	end
 
 	-- phase 4: add something about returning the main table
-	if result[n]:sub(1, 8) == 'local _0' then
-		result[n] = 'return' .. result[n]:sub(11)
+	if result[n]:sub(1, 5) == '_[0] ' then
+		result[n] = 'return' .. result[n]:sub(7)
 	else
-		result[n + 1] = 'return _0'
+		result[n + 1] = 'return _[0]'
 	end
 
 	-- phase 5: just concatenate everything
-	return concat(result, '\n')
+	result = concat(result, '\n')
+	return n > 1 and 'local _ = {}\n' .. result or result
 end
