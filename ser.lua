@@ -1,4 +1,4 @@
-local pairs, ipairs, tostring, type, concat, dump, floor = pairs, ipairs, tostring, type, table.concat, string.dump, math.floor
+local pairs, ipairs, tostring, type, concat, dump, floor, format = pairs, ipairs, tostring, type, table.concat, string.dump, math.floor, string.format
 
 local function getchr(c)
 	return "\\" .. c:byte()
@@ -11,9 +11,12 @@ end
 local oddvals = {[tostring(1/0)] = '1/0', [tostring(-1/0)] = '-1/0', [tostring(0/0)] = '0/0'}
 local function write(t, memo, rev_memo)
 	local ty = type(t)
-	if ty == 'number' or ty == 'boolean' or ty == 'nil' then
-		t = tostring(t)
+	if ty == 'number' then
+		t = format("%.17g", t)
 		return oddvals[t] or t
+	elseif or ty == 'boolean' or ty == 'nil' then
+		t = tostring(t)
+		return tostring(t)
 	elseif ty == 'string' then
 		return make_safe(t)
 	elseif ty == 'table' or ty == 'function' then
