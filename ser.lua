@@ -36,9 +36,9 @@ local kw = {['and'] = true, ['break'] = true, ['do'] = true, ['else'] = true,
 	['until'] = true, ['while'] = true}
 local function write_key_value_pair(k, v, memo, rev_memo, name)
 	if type(k) == 'string' and k:match '^[_%a][_%w]*$' and not kw[k] then
-		return (name and name .. '.' or '') .. k ..' = ' .. write(v, memo, rev_memo)
+		return (name and name .. '.' or '') .. k ..'=' .. write(v, memo, rev_memo)
 	else
-		return (name or '') .. '[' .. write(k, memo, rev_memo) .. '] = ' .. write(v, memo, rev_memo)
+		return (name or '') .. '[' .. write(k, memo, rev_memo) .. ']=' .. write(v, memo, rev_memo)
 	end
 end
 
@@ -53,19 +53,19 @@ end
 
 local function write_table_ex(t, memo, rev_memo, srefs, name)
 	if type(t) == 'function' then
-		return '_[' .. name .. '] = loadstring ' .. make_safe(dump(t))
+		return '_[' .. name .. ']=loadstring' .. make_safe(dump(t))
 	end
-	local m = {'_[', name, '] = {'}
+	local m = {'_[', name, ']={'}
 	local mi = 3
 	for i = 1, #t do -- don't use ipairs here, we need the gaps
 		local v = t[i]
 		if v == t or is_cyclic(memo, v, t) then
 			srefs[#srefs + 1] = {name, i, v}
-			m[mi + 1] = 'nil, '
+			m[mi + 1] = 'nil,'
 			mi = mi + 1
 		else
 			m[mi + 1] = write(v, memo, rev_memo)
-			m[mi + 2] = ', '
+			m[mi + 2] = ','
 			mi = mi + 2
 		end
 	end
@@ -75,7 +75,7 @@ local function write_table_ex(t, memo, rev_memo, srefs, name)
 				srefs[#srefs + 1] = {name, k, v}
 			else
 				m[mi + 1] = write_key_value_pair(k, v, memo, rev_memo)
-				m[mi + 2] = ', '
+				m[mi + 2] = ','
 				mi = mi + 2
 			end
 		end
@@ -110,13 +110,13 @@ return function(t)
 	end
 
 	-- phase 4: add something about returning the main table
-	if result[n]:sub(1, 5) == '_[0] ' then
-		result[n] = 'return' .. result[n]:sub(7)
+	if result[n]:sub(1, 5) == '_[0]=' then
+		result[n] = 'return ' .. result[n]:sub(6)
 	else
 		result[n + 1] = 'return _[0]'
 	end
 
 	-- phase 5: just concatenate everything
 	result = concat(result, '\n')
-	return n > 1 and 'local _ = {}\n' .. result or result
+	return n > 1 and 'local _={}\n' .. result or result
 end
