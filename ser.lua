@@ -15,7 +15,6 @@ local function write(t, memo, rev_memo)
 		t = format("%.17g", t)
 		return oddvals[t] or t
 	elseif ty == 'boolean' or ty == 'nil' then
-		t = tostring(t)
 		return tostring(t)
 	elseif ty == 'string' then
 		return make_safe(t)
