@@ -47,7 +47,7 @@ _[0]={}
 _[0].self=_[0]
 return _[0]]=], 'simple cycle')
 
-case_error({coroutine.create(function()end)}, './ser.lua:27: Trying to serialize unsupported type thread', 'unsupported type')
+case_error({coroutine.create(function()end)}, './ser.lua:29: Trying to serialize unsupported type thread', 'unsupported type')
 
 case({"a", foo = "bar", ["3f"] = true, _1 = false, ["00"] = 9}, 'return {"a",["3f"]=true,_1=false,["00"]=9,foo="bar"}', 'various')
 
@@ -58,7 +58,7 @@ case({['\127\230\255\254\128\12\0128\n\31'] = '\0'}, 'return {["\\127\\230\\255\
 local x = {}
 case({x, {x}, x}, [=[
 local _={}
-_[2]={}
+_[2]={nil}
 _[1]={}
 _[0]={_[1],_[2],_[1]}
 _[2][1]=_[1]

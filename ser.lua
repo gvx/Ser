@@ -57,18 +57,17 @@ local function write_table_ex(t, memo, rev_memo, srefs, name)
 	if type(t) == 'function' then
 		return '_[' .. name .. ']=loadstring' .. make_safe(dump(t))
 	end
-	local m = {'_[', name, ']={'}
-	local mi = 3
+	local m = {}
+	local mi = 1
 	for i = 1, #t do -- don't use ipairs here, we need the gaps
 		local v = t[i]
 		if v == t or is_cyclic(memo, v, t) then
 			srefs[#srefs + 1] = {name, i, v}
-			m[mi + 1] = 'nil,'
+			m[mi] = 'nil'
 			mi = mi + 1
 		else
-			m[mi + 1] = write(v, memo, rev_memo)
-			m[mi + 2] = ','
-			mi = mi + 2
+			m[mi] = write(v, memo, rev_memo)
+			mi = mi + 1
 		end
 	end
 	for k,v in pairs(t) do
@@ -76,14 +75,12 @@ local function write_table_ex(t, memo, rev_memo, srefs, name)
 			if v == t or k == t or is_cyclic(memo, v, t) or is_cyclic(memo, k, t) then
 				srefs[#srefs + 1] = {name, k, v}
 			else
-				m[mi + 1] = write_key_value_pair(k, v, memo, rev_memo)
-				m[mi + 2] = ','
-				mi = mi + 2
+				m[mi] = write_key_value_pair(k, v, memo, rev_memo)
+				mi = mi + 1
 			end
 		end
 	end
-	m[mi > 3 and mi or mi + 1] = '}'
-	return concat(m)
+	return '_[' .. name .. ']={' .. concat(m, ',') .. '}'
 end
 
 return function(t)
