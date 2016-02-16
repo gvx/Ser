@@ -1,3 +1,6 @@
+> Since 2016-02-16, Ser is **deprecated**. I will still fix reported bugs, but for new projects, I recommend [bitser](https://github.com/gvx/bitser) if you're using LuaJIT, and [binser](https://github.com/bakpakin/binser)
+otherwise.
+
 Ser
 ===
 
